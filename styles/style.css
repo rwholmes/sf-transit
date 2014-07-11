@@ -1,0 +1,12 @@
+.background {
+	stroke: black;
+	fill: none;
+}
+
+#neighborhoods {
+	fill: #cde;
+	stroke: #fff;
+	stroke-linejoin: round;
+	stroke-linecap: round;
+	cursor: pointer;
+}
