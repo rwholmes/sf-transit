@@ -1,0 +1,12 @@
+{
+  "name": "sf-transit",
+  "version": "0.0.0",
+  "description": "An interative map of San Francisco public transit",
+  "main": "index.html",
+  "devDependencies": {
+    "gulp": "^3.8.6"
+  },
+  "dependencies": {
+    "express": "^4.5.1"
+  }
+}
