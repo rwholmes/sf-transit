@@ -10,3 +10,12 @@
 	stroke-linecap: round;
 	cursor: pointer;
 }
+
+.stops {
+  fill: #036;
+  stroke: #6cb0e0;
+  stroke-width: 0.5px;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  vector-effect: non-scaling-stroke;
+}
