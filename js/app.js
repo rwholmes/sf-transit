@@ -84,45 +84,116 @@ var zoomOut = function() {
 }
 
 
-/// CODE FROM OTHER FILE
+// / CODE FOR STOPS
 
-$(document).ready(function() {
-  $.ajax({
-    url: 'http://webservices.nextbus.com/service/publicXMLFeed?command=routeConfig&a=sf-muni&r=N',
-    type: 'GET',
-    dataType: 'xml',
-    success: function(xml) {
-      var stops = [];
-      var $route = $(xml).find('route')[0];
-      for (var j = 0; j < $route.childNodes.length; j++) {
-        var stop = $route.childNodes[j];
-        if (stop.tagName == 'stop') {
-          var parsedStop = {
-            tag: stop.getAttribute('tag'),
-            title: stop.getAttribute('title'),
-            lat: stop.getAttribute('lat'),
-            lon: stop.getAttribute('lon')
-          };
-          stops.push(parsedStop);
-        }
-      }
+// $(document).ready(function() {
+//   $.ajax({
+//     url: 'http://webservices.nextbus.com/service/publicXMLFeed?command=routeConfig&a=sf-muni&r=N',
+//     type: 'GET',
+//     dataType: 'xml',
+//     success: function(xml) {
+//       var stops = [];
+//       var $route = $(xml).find('route')[0];
+//       for (var j = 0; j < $route.childNodes.length; j++) {
+//         var stop = $route.childNodes[j];
+//         if (stop.tagName == 'stop') {
+//           var parsedStop = {
+//             tag: stop.getAttribute('tag'),
+//             title: stop.getAttribute('title'),
+//             lat: stop.getAttribute('lat'),
+//             lon: stop.getAttribute('lon')
+//           };
+//           stops.push(parsedStop);
+//         }
+//       }
         
 
-      g.selectAll("circle")
-        .data(stops)
-        .enter()
-        .append("circle")
-        .attr("cx", function(d) {
-          return projection([d.lon, d.lat])[0];
-        })
-        .attr("cy", function(d) {
-          return projection([d.lon, d.lat])[1];
-        })
-        .attr("r", 3)
-        .style("fill", "black");
-    }
-  });
+//       g.selectAll("circle")
+//         .data(stops)
+//         .enter()
+//         .append("circle")
+//         .attr("cx", function(d) {
+//           return projection([d.lon, d.lat])[0];
+//         })
+//         .attr("cy", function(d) {
+//           return projection([d.lon, d.lat])[1];
+//         })
+//         .attr("r", 3)
+//         .style("fill", "black");
+//     }
+//   });
+// });
+
+
+// CODE FOR VEHICLE POSITIONS
+
+$(document).ready(function() {
+  var initialized = false;
+
+  var updateLocations = function() {
+    console.log('Getting vehicle locations');
+    $.ajax({
+      url: 'http://webservices.nextbus.com/service/publicXMLFeed?command=vehicleLocations&a=sf-muni&r=N&t=1144953500233',
+      type: 'GET',
+      dataType: 'xml',
+      success: function(xml) {
+        var vehicles = [];
+        var vehiclesHash = {};
+        $(xml).find('vehicle').each(function(i, vehicle) {
+          var parsedVehicle = {
+            id: vehicle.getAttribute('id'),
+            dirTag: vehicle.getAttribute('dirTag'),
+            lat: vehicle.getAttribute('lat'),
+            lon: vehicle.getAttribute('lon')
+          }
+
+          vehicles.push(parsedVehicle);
+          vehiclesHash[parsedVehicle.id] = parsedVehicle;
+        });
+
+        if (!initialized) {
+          g.selectAll('circle')
+            .data(vehicles)
+            .enter()
+            .append('circle')
+            .attr('id', function(d) {
+              return d.id;
+            })
+            .attr('cx', function(d) {
+              return projection([d.lon, d.lat])[0];
+            })
+            .attr('cy', function(d) {
+              return projection([d.lon, d.lat])[1];
+            })
+            .attr('r', 3)
+            .style('fill', 'black');
+
+
+          initialized = true;
+        } else {
+          console.log('updating');
+          g.selectAll('circle').each(function(d,i) {
+            var id = d.id;
+            var newLat = vehiclesHash[id].lat;
+            var newLon = vehiclesHash[id].lon;
+            d3.select(this).transition()
+              .attr('cx', function(d) {
+                return projection([newLon, newLat])[0];
+              })
+              .attr('cy', function(d) {
+                return projection([newLon, newLat])[1];
+              });
+          });
+        }
+      }
+    });
+  };
+
+  updateLocations();
+  setInterval(function() { updateLocations(); }, 8000);
 });
+
+
 
 
 

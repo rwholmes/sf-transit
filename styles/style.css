@@ -19,3 +19,11 @@
   stroke-linejoin: round;
   vector-effect: non-scaling-stroke;
 }
+
+.inbound {
+	fill: green;
+}
+
+.outbound {
+	fill: red;
+}
