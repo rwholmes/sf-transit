@@ -129,16 +129,19 @@ var zoomOut = function() {
 
 $(document).ready(function() {
   var initialized = false;
+  var lastTime = '0'; 
 
   var updateLocations = function() {
     console.log('Getting vehicle locations');
     $.ajax({
-      url: 'http://webservices.nextbus.com/service/publicXMLFeed?command=vehicleLocations&a=sf-muni&r=N&t=1144953500233',
+      url: 'http://webservices.nextbus.com/service/publicXMLFeed?command=vehicleLocations&a=sf-muni&r=N&t=' + lastTime,
       type: 'GET',
       dataType: 'xml',
       success: function(xml) {
         var vehicles = [];
         var vehiclesHash = {};
+        lastTime = $(xml).find('lastTime').attr('time').toString();
+
         $(xml).find('vehicle').each(function(i, vehicle) {
           var parsedVehicle = {
             id: vehicle.getAttribute('id'),
@@ -174,15 +177,17 @@ $(document).ready(function() {
           console.log('updating');
           g.selectAll('circle').each(function(d,i) {
             var id = d.id;
-            var newLat = vehiclesHash[id].lat;
-            var newLon = vehiclesHash[id].lon;
-            d3.select(this).transition()
-              .attr('cx', function(d) {
-                return projection([newLon, newLat])[0];
-              })
-              .attr('cy', function(d) {
-                return projection([newLon, newLat])[1];
-              });
+            if (vehiclesHash[id]) {
+              var newLat = vehiclesHash[id].lat;
+              var newLon = vehiclesHash[id].lon;
+              d3.select(this).transition()
+                .attr('cx', function(d) {
+                  return projection([newLon, newLat])[0];
+                })
+                .attr('cy', function(d) {
+                  return projection([newLon, newLat])[1];
+                });              
+            }
           });
         }
       }
@@ -190,7 +195,7 @@ $(document).ready(function() {
   };
 
   updateLocations();
-  setInterval(function() { updateLocations(); }, 8000);
+  setInterval(function() { updateLocations(); }, 10000);
 });
 
 
