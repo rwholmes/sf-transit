@@ -38,15 +38,26 @@ d3.json('maps/neighborhoods.json', function(json) {
     .attr('d', path);
 });
 
-// CODE FOR VEHICLE POSITIONS
+// d3.json('maps/streets.json', function(json) {
+//   g.append('g')
+//     .attr('id', 'streets')
+//     .selectAll('path')
+//     .data(json.features)
+//     .enter()
+//     .append('path')
+//     .attr('d', path);
+// });
+
 
 $(document).ready(function() {
+  var route = 'N';
   var initialized = false;
   var lastTime = '0'; 
 
   var updateLocations = function() {
+    console.log('Updating vehicle positions for route ', route);
     $.ajax({
-      url: 'http://webservices.nextbus.com/service/publicXMLFeed?command=vehicleLocations&a=sf-muni&r=N&t=' + lastTime,
+      url: 'http://webservices.nextbus.com/service/publicXMLFeed?command=vehicleLocations&a=sf-muni&r=' + route + '&t=' + lastTime,
       type: 'GET',
       dataType: 'xml',
       success: function(xml) {
@@ -86,7 +97,6 @@ $(document).ready(function() {
 
           initialized = true;
         } else {
-          console.log('updating');
           g.selectAll('circle').each(function(d,i) {
             var id = d.id;
             if (vehiclesHash[id]) {
@@ -104,10 +114,49 @@ $(document).ready(function() {
         }
       }
     });
+
+    setTimeout(function() {
+      updateLocations();
+    }, 5000);
   };
 
+  // UI Controls
+  var loadRoutes = function(callback) {
+    $.ajax({
+      url: 'http://webservices.nextbus.com/service/publicXMLFeed?command=routeList&a=sf-muni',
+      type: 'GET',
+      dataType: 'xml',
+      success: function(xml) {
+        var routes = [];
+        $(xml).find('route').each(function(i, route) {
+          var parsedRoute = route.getAttribute('tag');
+          routes.push(parsedRoute);
+        });
+        callback(routes);
+      }
+    });
+
+  };
+
+  var displayRoutes = function(routes) {
+    for (var i=0; i<routes.length; i++) {
+      var route = routes[i];
+      if (route === 'N') {
+        var $route = $('<option value="' + route + '"selected>' + route + '</option>');
+      } else {
+        var $route = $('<option value="' + route + '">' + route + '</option>');
+      }
+      $('select').append($route);
+    }
+  }
+
+  $('button').on('click', function() {
+    var chosenRoute = $('select option:selected').text();
+    updateLocations();
+  });
+
   updateLocations();
-  setInterval(function() { updateLocations(); }, 10000);
+  loadRoutes(displayRoutes);
 });
 
 

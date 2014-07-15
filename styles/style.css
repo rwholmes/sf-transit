@@ -1,3 +1,9 @@
+/*.container {
+	width: 700px;
+	margin-right: auto;
+	margin-left: auto;
+}*/
+
 .background {
 	stroke: black;
 	fill: none;
@@ -8,7 +14,11 @@
 	stroke: #fff;
 	stroke-linejoin: round;
 	stroke-linecap: round;
-	cursor: pointer;
+}
+
+#streets {
+	fill: none;
+	stroke: #cccccc;
 }
 
 .stops {
