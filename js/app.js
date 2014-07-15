@@ -1,50 +1,42 @@
 
-var m_width = $('#map').width();
-var width  = 938;
+var m_width = $('#map').width()*.5;
+var width  = 500;
 var height = 500;
 var offset = [width/2, height/1.7];
-var zoomed = 0;
 
 var projection = d3.geo.mercator()
     .scale(160000)
-    .center([-122.43, 37.75])
     .translate(offset);
+
+var center = projection.center([-122.43, 37.75]);
 
 var path = d3.geo.path()
     .projection(projection);
 
-var svg = d3.select("#map").append("svg")
-    .attr("preserveAspectRatio", "xMidYMid")
-    .attr("viewBox", "0 0 " + width + " " + height)
-    .attr("width", m_width)
-    .attr("height", m_width * height / width);
+var svg = d3.select('#map').append('svg')
+    .attr('preserveAspectRatio', 'xMidYMid')
+    .attr('viewBox', '0 0 ' + width + ' ' + height)
+    .attr('width', m_width)
+    .attr('height', m_width * height / width);
 
 // add a rectangle to see the bound of the svg
-svg.append("rect")
-    .attr("class", "background")
-    .attr("width", width)
-    .attr("height", height);
+svg.append('rect')
+    .attr('class', 'background')
+    .attr('width', width)
+    .attr('height', height);
 
-var g = svg.append("g");
+var g = svg.append('g');
 
-d3.json("maps/neighborhoods.json", function(json) {
-  g.append("g")
-    .attr("id", "neighborhoods")
-    .selectAll("path")
+d3.json('maps/neighborhoods.json', function(json) {
+  g.append('g')
+    .attr('id', 'neighborhoods')
+    .selectAll('path')
     .data(json.features)
     .enter()
-    .append("path")
-    .attr("id", function(d) { return d.properties.neighborho; })
-    .attr("d", path);
-
-  // svg.selectAll("path").data(json.features).enter().append("path")
-  //   .attr("d", path)
-  //   .style("fill", "red")
-  //   .style("stroke-width", "1")
-  //   .style("stroke", "black")
-  //   .on("click", mapClicked);
+    .append('path')
+    .attr('id', function(d) { return d.properties.neighborho; })
+    .attr('d', path);
 });
-
 
 // CODE FOR VEHICLE POSITIONS
 
