@@ -13,30 +13,56 @@ Map.prototype = {
 		var height = 500;
 		var offset = [width/2, height/1.7];
 
-		this.projection = d3.geo.mercator()
+		var projection = d3.geo.mercator()
 		    .scale(160000)
 		    .translate(offset);
 
-		this.center = this.projection.center([-122.43, 37.75]);
+		var center = projection.center([-122.43, 37.75]);
 
-		this.path = d3.geo.path()
-		    .projection(this.projection);
+		var path = d3.geo.path()
+		    .projection(projection);
 
-		this.svg = d3.select('#map').append('svg')
-		    .attr('preserveAspectRatio', 'xMidYMid')
-		    .attr('viewBox', '0 0 ' + width + ' ' + height)
-		    .attr('width', m_width)
-		    .attr('height', m_width * height / width);
+    // ADDED DRAG CODE
+    var drag = d3.behavior.drag()
+        // .origin(function(d) { return d; })
+        .on("dragstart", dragstarted)
+        .on("drag", dragged)
+        .on("dragend", dragended);
 
-		// add a rectangle to see the bound of the svg
-		this.svg.append('rect')
-		    .attr('class', 'background')
-		    .attr('width', width)
-		    .attr('height', height);
+    function dragstarted(d) {
+      console.log('drag start');
+      d3.event.sourceEvent.stopPropagation();
+      d3.select(this).classed("dragging", true);
+    }
+
+    function dragged(d) {
+      console.log('dragging');
+      d3.select(this).attr("cx", d.x = d3.event.x).attr("cy", d.y = d3.event.y);
+    }
+
+    function dragended(d) {
+      console.log('drag end');
+      d3.select(this).classed("dragging", false);
+    }
+    // END DRAG CODE
+
+    this.svg = d3.select('#map').append('svg')
+        .attr('preserveAspectRatio', 'xMidYMid')
+        .attr('viewBox', '0 0 ' + width + ' ' + height)
+        .attr('width', m_width)
+        .attr('height', m_width * height / width)
+        .call(drag);
+
+    // add a rectangle to see the bound of the svg
+    this.svg.append('rect')
+        .attr('class', 'background')
+        .attr('width', width)
+        .attr('height', height);
+
 
 		this.g = this.svg.append('g');
 		var g = this.g;
-		var path = this.path;
+		var path = path;
 
 		d3.json('maps/neighborhoods.json', function(json) {
 		  g.append('g')
@@ -52,7 +78,7 @@ Map.prototype = {
 
 	updateLocations: function() {
 		var g = this.g;
-		var projection = this.projection;
+		var projection = projection;
 
     console.log('Updating vehicle positions for route ', route);
     $.ajax({
