@@ -8,7 +8,6 @@ Ui.prototype = {
 		this.loadRoutes(this.displayRoutes);
 	},
 	loadRoutes: function(callback) {
-		console.log('calling loadRoutes');
     $.ajax({
       url: 'http://webservices.nextbus.com/service/publicXMLFeed?command=routeList&a=sf-muni',
       type: 'GET',
@@ -25,7 +24,6 @@ Ui.prototype = {
 
   },
   displayRoutes: function(routes) {
-  	console.log('calling displayRoutes');
     for (var i=0; i<routes.length; i++) {
       var route = routes[i];
       if (route === 'N') {
