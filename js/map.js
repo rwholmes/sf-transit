@@ -4,9 +4,7 @@ var route = 'N';
 var initialized = false;
 var lastTime = '0';
 
-function Map() {
-
-}
+function Map() {}
 
 Map.prototype = {
 	init: function() {
