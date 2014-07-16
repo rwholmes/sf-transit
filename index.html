@@ -2,17 +2,27 @@
 <html>
 <head>
   <title>SF Transit</title>
+  <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">
   <link href="styles/style.css" type="text/css" rel="stylesheet" />
 </head>
 <body>
   <div class="container">
-    <div id="map">
+    <div class="row">
+      <div class="col-xs-12">
+        <h1>Mapping SF Muni with D3</h1>
+      </div>
+      <div class="col-xs-12">
+        <div id="map">
+        </div>
+      </div>
     </div>
 
-    <div id="ui-controls">
-      <select name="select">
-      </select>
-      <button>Update Route</button>
+    <div class="row">
+      <div id="ui-controls">
+        <select name="select">
+        </select>
+        <button>Update Route</button>
+      </div>
     </div>
   </div><!-- .container : end -->
 
@@ -21,6 +31,7 @@
   </footer>
 
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+  <script src="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
   <script src="http://d3js.org/d3.v3.min.js" charset="utf-8"></script>
   <script src="js/bundle.js"></script>
 </body>

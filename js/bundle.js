@@ -44,9 +44,9 @@ function Map() {}
 
 Map.prototype = {
 	init: function() {
-		var m_width = $('#map').width()*.5;
+		var m_width = $('#map').width();
 		var width  = 500;
-		var height = 500;
+		var height = 250;
 		var offset = [width/2, height/1.7];
 
 		var projection = d3.geo.mercator()
@@ -58,8 +58,6 @@ Map.prototype = {
 		var path = d3.geo.path()
 		    .projection(projection);
 
-
-    // ADDED DRAG CODE
     var drag = d3.behavior.drag()
         .on('dragstart', function() {
           var proj = projection.translate();
@@ -75,8 +73,6 @@ Map.prototype = {
           path = d3.geo.path().projection(projection);
           d3.selectAll("path").attr("d", path);
         });
-
-    // END DRAG CODE
 
     this.svg = d3.select('#map').append('svg')
         .attr('preserveAspectRatio', 'xMidYMid')
