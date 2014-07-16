@@ -58,26 +58,23 @@ Map.prototype = {
 		var path = d3.geo.path()
 		    .projection(projection);
 
+
     // ADDED DRAG CODE
-    var m0;
     var drag = d3.behavior.drag()
-        .on("dragstart", function() {
+        .on('dragstart', function() {
           var proj = projection.translate();
           m0 = [d3.event.sourceEvent.pageX, d3.event.sourceEvent.pageY];
-          console.log('drag start: ', m0);
         })
-        .on("drag", function() {
+        .on('drag', function() {
           if (m0) {
             var m1 = [d3.event.sourceEvent.pageX, d3.event.sourceEvent.pageY];
-            var deltaPos = [m1[0]-m0[0], m1[1]-m0[1]];
-            console.log('deltaPos ', deltaPos);
+            var deltaPos = [m1[0] - m0[0] + offset[0], m1[1] - m0[1] + offset[1]];
             projection.translate(deltaPos);
           }
 
           path = d3.geo.path().projection(projection);
           d3.selectAll("path").attr("d", path);
         });
-
 
     // END DRAG CODE
 

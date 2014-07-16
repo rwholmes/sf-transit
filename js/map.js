@@ -22,28 +22,24 @@ Map.prototype = {
 		var path = d3.geo.path()
 		    .projection(projection);
 
+
     // ADDED DRAG CODE
     var drag = d3.behavior.drag()
-        // .origin(function(d) { return d; })
-        .on("dragstart", dragstarted)
-        .on("drag", dragged)
-        .on("dragend", dragended);
+        .on('dragstart', function() {
+          var proj = projection.translate();
+          m0 = [d3.event.sourceEvent.pageX, d3.event.sourceEvent.pageY];
+        })
+        .on('drag', function() {
+          if (m0) {
+            var m1 = [d3.event.sourceEvent.pageX, d3.event.sourceEvent.pageY];
+            var deltaPos = [m1[0] - m0[0] + offset[0], m1[1] - m0[1] + offset[1]];
+            projection.translate(deltaPos);
+          }
 
-    function dragstarted(d) {
-      console.log('drag start');
-      d3.event.sourceEvent.stopPropagation();
-      d3.select(this).classed("dragging", true);
-    }
+          path = d3.geo.path().projection(projection);
+          d3.selectAll("path").attr("d", path);
+        });
 
-    function dragged(d) {
-      console.log('dragging');
-      d3.select(this).attr("cx", d.x = d3.event.x).attr("cy", d.y = d3.event.y);
-    }
-
-    function dragended(d) {
-      console.log('drag end');
-      d3.select(this).classed("dragging", false);
-    }
     // END DRAG CODE
 
     this.svg = d3.select('#map').append('svg')
