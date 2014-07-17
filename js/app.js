@@ -14,7 +14,9 @@ $(document).ready(function() {
   // Listeners
   $('button').on('click', function() {
     var chosenRoute = $('select option:selected').text();
-    // updateLocations();
+    // map.continueUpdate = false;
+    // map.updateLocations(chosenRoute);
+    map.resetRoute(chosenRoute);
   });
 
 });

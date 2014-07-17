@@ -15,7 +15,9 @@ $(document).ready(function() {
   // Listeners
   $('button').on('click', function() {
     var chosenRoute = $('select option:selected').text();
-    // updateLocations();
+    // map.continueUpdate = false;
+    // map.updateLocations(chosenRoute);
+    map.resetRoute(chosenRoute);
   });
 
 });
@@ -36,11 +38,14 @@ $(document).ready(function() {
 },{"./map.js":2,"./ui.js":3}],2:[function(require,module,exports){
 module.exports = Map;
 
-var route = 'N';
-var initialized = false;
-var lastTime = '0';
-
-function Map() {}
+function Map() {
+  this.route = 'N';
+  this.vehiclesLoaded = false;
+  this.lastTime = '0';
+  this.g;
+  this.projection;
+  this.continueUpdate = true;
+}
 
 Map.prototype = {
 	init: function() {
@@ -49,7 +54,7 @@ Map.prototype = {
 		var height = 250;
 		var offset = [width/2, height/1.7];
 
-		var projection = d3.geo.mercator()
+		var projection = this.projection = d3.geo.mercator()
 		    .scale(160000)
 		    .translate(offset);
 
@@ -74,7 +79,7 @@ Map.prototype = {
           d3.selectAll("path").attr("d", path);
         });
 
-    this.svg = d3.select('#map').append('svg')
+    var svg = d3.select('#map').append('svg')
         .attr('preserveAspectRatio', 'xMidYMid')
         .attr('viewBox', '0 0 ' + width + ' ' + height)
         .attr('width', m_width)
@@ -82,15 +87,13 @@ Map.prototype = {
         .call(drag);
 
     // add a rectangle to see the bound of the svg
-    this.svg.append('rect')
+    svg.append('rect')
         .attr('class', 'background')
         .attr('width', width)
         .attr('height', height);
 
 
-		this.g = this.svg.append('g');
-		var g = this.g;
-		var path = path;
+		var g = this.g = svg.append('g');
 
 		d3.json('maps/neighborhoods.json', function(json) {
 		  g.append('g')
@@ -103,20 +106,30 @@ Map.prototype = {
 		    .attr('d', path);
 		});
 	},
-
+  resetRoute: function(route) {
+    console.log('Setting new route: ', route);
+    d3.selectAll('circle').remove();
+    this.vehiclesLoaded = false;
+    this.lastTime = '0';
+    this.route = route;
+    clearTimeout(this.timeoutId);
+    delete this.timeoutId;
+    this.updateLocations();
+  },
 	updateLocations: function() {
 		var g = this.g;
-		var projection = projection;
+		var projection = this.projection;
 
-    console.log('Updating vehicle positions for route ', route);
+    console.log('Updating vehicle positions for route: ', this.route);
+    var map = this;
     $.ajax({
-      url: 'http://webservices.nextbus.com/service/publicXMLFeed?command=vehicleLocations&a=sf-muni&r=' + route + '&t=' + lastTime,
+      url: 'http://webservices.nextbus.com/service/publicXMLFeed?command=vehicleLocations&a=sf-muni&r=' + map.route + '&t=' + map.lastTime,
       type: 'GET',
       dataType: 'xml',
       success: function(xml) {
         var vehicles = [];
         var vehiclesHash = {};
-        lastTime = $(xml).find('lastTime').attr('time').toString();
+        map.lastTime = $(xml).find('lastTime').attr('time').toString();
 
         $(xml).find('vehicle').each(function(i, vehicle) {
           var parsedVehicle = {
@@ -130,7 +143,7 @@ Map.prototype = {
           vehiclesHash[parsedVehicle.id] = parsedVehicle;
         });
 
-        if (!initialized) {
+        if (!map.vehiclesLoaded) {
           g.selectAll('circle')
             .data(vehicles)
             .enter()
@@ -147,8 +160,7 @@ Map.prototype = {
             .attr('r', 3)
             .style('fill', 'black');
 
-
-          initialized = true;
+          map.vehiclesLoaded = true;
         } else {
           g.selectAll('circle').each(function(d,i) {
             var id = d.id;
@@ -168,8 +180,8 @@ Map.prototype = {
       }
     });
 		
-		var map = this;
-		setTimeout(function() { map.updateLocations(); }, 15000);
+    var map = this;
+	  this.timeoutId = setTimeout(function() { map.updateLocations(); }, 4000);
   }
 }
 
