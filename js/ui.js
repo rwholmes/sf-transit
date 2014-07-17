@@ -1,3 +1,7 @@
+/**
+ * Ui (pseudo-class)
+ */
+
 module.exports = Ui;
 
 function Ui() {}
@@ -6,6 +10,8 @@ Ui.prototype = {
 	init: function() {
 		this.loadRoutes(this.displayRoutes);
 	},
+
+  // download the route options
 	loadRoutes: function(callback) {
     $.ajax({
       url: 'http://webservices.nextbus.com/service/publicXMLFeed?command=routeList&a=sf-muni',
@@ -22,6 +28,8 @@ Ui.prototype = {
     });
 
   },
+
+  // load routes into select
   displayRoutes: function(routes) {
     for (var i=0; i<routes.length; i++) {
       var route = routes[i];
