@@ -184,9 +184,9 @@ Map.prototype = {
             .data(vehicles)
             .enter()
             .append('image')
-            .attr("xlink:href", "../images/bus.png")
-            .attr("width", "10")
-            .attr("height", "10")
+            .attr('xlink:href', '../images/bus.png')
+            .attr('width', '10')
+            .attr('height', '10')
             .attr('id', function(d) {
               return d.id;
             })
@@ -225,10 +225,3 @@ Map.prototype = {
 	  this.timeoutId = setTimeout(function() { map.updateLocations(); }, 15000);
   }
 }
-
-
-
-
-
-
-

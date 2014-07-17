@@ -1,11 +1,13 @@
 {
   "name": "sf-transit",
   "version": "0.0.0",
-  "description": "An interative map of San Francisco public transit",
+  "description": "An interative map with realtime positions of San Francisco transit vehicles",
   "main": "index.html",
-  "devDependencies": {
-    "gulp": "^3.8.6"
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/sudostack/suberdoku"
   },
+  "author": "Robert Holmes",
   "dependencies": {
     "express": "^4.5.1"
   }

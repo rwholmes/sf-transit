@@ -34,16 +34,3 @@ $(document).ready(function() {
   });
 
 });
-
-
-
-
-
-
-
-
-
-
-
-
-
