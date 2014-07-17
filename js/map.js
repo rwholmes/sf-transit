@@ -16,7 +16,7 @@ Map.prototype = {
 		var m_width = $('#map').width();
 		var width  = 500;
 		var height = 250;
-		var offset = [width/2, height/1.7];
+		var offset = [width/1.9, height/1.3];
 
 		var projection = this.projection = d3.geo.mercator()
 		    .scale(160000)
@@ -63,13 +63,6 @@ Map.prototype = {
         .attr('width', m_width)
         .attr('height', m_width * height / width)
         .call(drag);
-
-    // add a rectangle to see the bound of the svg
-    svg.append('rect')
-        .attr('class', 'background')
-        .attr('width', width)
-        .attr('height', height);
-
 
 		var g = this.g = svg.append('g');
 

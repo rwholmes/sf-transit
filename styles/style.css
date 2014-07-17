@@ -1,4 +1,7 @@
-
+#map {
+	padding: 5px;
+	border: solid 1px #EFEFEF;
+}
 .background {
 	stroke: black;
 	fill: none;
@@ -15,7 +18,6 @@
 	fill: none;
 	stroke: #cccccc;
 }
-
 .stops {
   fill: #036;
   stroke: #6cb0e0;
@@ -25,10 +27,20 @@
   vector-effect: non-scaling-stroke;
 }
 
-.inbound {
-	fill: green;
-}
-
 .outbound {
 	fill: red;
 }
+#ui-controls {
+	margin-top: 20px;
+}
+
+label.form-control {
+	border: none;
+	box-shadow: none;
+	font-size: 16px;
+	padding-top: 8px;
+}
+
+
+
+
