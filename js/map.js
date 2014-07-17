@@ -3,6 +3,7 @@ module.exports = Map;
 function Map() {
   this.vehiclesLoaded = false;
   this.mapLoaded = false;
+  this.routeLoaded = false;
   this.route = 'N';
   this.lastTime = '0';
   this.g;
@@ -40,12 +41,19 @@ Map.prototype = {
 
           path = d3.geo.path().projection(projection);
           d3.selectAll('path').attr('d', path);
-          d3.selectAll('image')
-            .attr('x', function(d) {
+          d3.selectAll('circle')
+            .attr('cx', function(d) {
               return projection([d.lon, d.lat])[0];
             })
-            .attr('y', function(d) {
+            .attr('cy', function(d) {
               return projection([d.lon, d.lat])[1];
+            });
+          d3.selectAll('image')
+            .attr('x', function(d) {
+              return projection([d.lon, d.lat])[0] - 5;
+            })
+            .attr('y', function(d) {
+              return projection([d.lon, d.lat])[1] - 5;
             });
         });
 
@@ -75,23 +83,66 @@ Map.prototype = {
 		    .append('path')
 		    .attr('id', function(d) { return d.properties.neighborho; })
 		    .attr('d', path);
+      console.log('map loaded');
       map.mapLoaded = true;   
 		});
 	},
   resetRoute: function(route) {
     console.log('Setting new route: ', route);
     d3.selectAll('image').remove();
+    d3.selectAll('circle').remove();
     this.vehiclesLoaded = false;
+    this.routeLoaded = false;
     this.lastTime = '0';
     this.route = route;
     clearTimeout(this.timeoutId);
     delete this.timeoutId;
+    this.drawRoute();
     this.updateLocations();
+  },
+  drawRoute: function() {
+    var map = this;
+    if (!this.mapLoaded) {
+      setTimeout(function() { map.drawRoute(); }, 50);
+      return;
+    }
+    var g = this.g;
+    var projection = this.projection;
+    $.ajax({
+      url: 'http://webservices.nextbus.com/service/publicXMLFeed?command=routeConfig&a=sf-muni&terse&r=' + map.route,
+      type: 'GET',
+      dataType: 'xml',
+      success: function(xml) {
+        var stops = [];
+        $(xml).find('stop').each(function(i, stop) {
+          var parsedStop = {
+            lat: stop.getAttribute('lat'),
+            lon: stop.getAttribute('lon')
+          };
+          stops.push(parsedStop);
+        });
+
+        g.selectAll('circle')
+            .data(stops)
+            .enter()
+            .append('circle')     
+            .attr('cx', function(d) {
+              return projection([d.lon, d.lat])[0];
+            })
+            .attr('cy', function(d) {
+              return projection([d.lon, d.lat])[1];
+            })
+            .attr('r', 1)
+            .style('fill', 'red');
+        console.log('route loaded');
+        map.routeLoaded = true;
+      }
+    });
   },
 	updateLocations: function() {
     var map = this;
-    if (!this.mapLoaded) {
-      setTimeout(function() { map.updateLocations(); }, 100);
+    if (!this.mapLoaded || !this.routeLoaded) {
+      setTimeout(function() { map.updateLocations(); }, 50);
       return;
     }
     var g = this.g;
@@ -120,7 +171,7 @@ Map.prototype = {
         });
 
         if (!map.vehiclesLoaded) {
-          g.selectAll('circle')
+          g.selectAll('image')
             .data(vehicles)
             .enter()
             .append('image')
@@ -131,14 +182,15 @@ Map.prototype = {
               return d.id;
             })
             .attr('x', function(d) {
-              return projection([d.lon, d.lat])[0];
+              return projection([d.lon, d.lat])[0] - 5;
             })
             .attr('y', function(d) {
-              return projection([d.lon, d.lat])[1];
+              return projection([d.lon, d.lat])[1] - 5;
             })
             // .attr('r', 3)
             .style('fill', 'black');
 
+          console.log('vehiclesLoaded');
           map.vehiclesLoaded = true;
         } else {
           g.selectAll('image').each(function(d,i) {
@@ -147,11 +199,13 @@ Map.prototype = {
               var newLat = vehiclesHash[id].lat;
               var newLon = vehiclesHash[id].lon;
               d3.select(this).transition()
+                .duration(500)
+                .ease('linear')
                 .attr('x', function(d) {
-                  return projection([newLon, newLat])[0];
+                  return projection([newLon, newLat])[0] - 5;
                 })
                 .attr('y', function(d) {
-                  return projection([newLon, newLat])[1];
+                  return projection([newLon, newLat])[1] - 5;
                 });              
             }
           });

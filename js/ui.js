@@ -4,7 +4,6 @@ function Ui() {}
 
 Ui.prototype = {
 	init: function() {
-		console.log('calling init');
 		this.loadRoutes(this.displayRoutes);
 	},
 	loadRoutes: function(callback) {

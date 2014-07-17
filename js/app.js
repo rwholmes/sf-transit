@@ -8,14 +8,13 @@ $(document).ready(function() {
   var map = new Map();
   var ui = new Ui();
   map.init();
+  map.drawRoute();
   map.updateLocations();
   ui.init();
 
   // Listeners
   $('button').on('click', function() {
     var chosenRoute = $('select option:selected').text();
-    // map.continueUpdate = false;
-    // map.updateLocations(chosenRoute);
     map.resetRoute(chosenRoute);
   });
 
