@@ -78,11 +78,11 @@ Map.prototype = {
 
           path = d3.geo.path().projection(projection);
           d3.selectAll('path').attr('d', path);
-          d3.selectAll('circle')
-            .attr('cx', function(d) {
+          d3.selectAll('image')
+            .attr('x', function(d) {
               return projection([d.lon, d.lat])[0];
             })
-            .attr('cy', function(d) {
+            .attr('y', function(d) {
               return projection([d.lon, d.lat])[1];
             });
         });
@@ -118,7 +118,7 @@ Map.prototype = {
 	},
   resetRoute: function(route) {
     console.log('Setting new route: ', route);
-    d3.selectAll('circle').remove();
+    d3.selectAll('image').remove();
     this.vehiclesLoaded = false;
     this.lastTime = '0';
     this.route = route;
@@ -161,31 +161,34 @@ Map.prototype = {
           g.selectAll('circle')
             .data(vehicles)
             .enter()
-            .append('circle')
+            .append('image')
+            .attr("xlink:href", "../images/bus.png")
+            .attr("width", "10")
+            .attr("height", "10")
             .attr('id', function(d) {
               return d.id;
             })
-            .attr('cx', function(d) {
+            .attr('x', function(d) {
               return projection([d.lon, d.lat])[0];
             })
-            .attr('cy', function(d) {
+            .attr('y', function(d) {
               return projection([d.lon, d.lat])[1];
             })
-            .attr('r', 3)
+            // .attr('r', 3)
             .style('fill', 'black');
 
           map.vehiclesLoaded = true;
         } else {
-          g.selectAll('circle').each(function(d,i) {
+          g.selectAll('image').each(function(d,i) {
             var id = d.id;
             if (vehiclesHash[id]) {
               var newLat = vehiclesHash[id].lat;
               var newLon = vehiclesHash[id].lon;
               d3.select(this).transition()
-                .attr('cx', function(d) {
+                .attr('x', function(d) {
                   return projection([newLon, newLat])[0];
                 })
-                .attr('cy', function(d) {
+                .attr('y', function(d) {
                   return projection([newLon, newLat])[1];
                 });              
             }
