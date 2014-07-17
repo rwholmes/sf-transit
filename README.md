@@ -3,7 +3,7 @@ SF Transit
 
 ### About
 
-An interactive map of San Francisco that displays the realtime positions of SF Muni busses and trains. The app uses data from the NextBus api [http://www.nextbus.com/xmlFeedDocs/NextBusXMLFeed.pdf] to display transit routes and vehicle positions.
+An interactive map of San Francisco that displays the realtime positions of SF Muni buses and trains. The app uses data from the NextBus api [http://www.nextbus.com/xmlFeedDocs/NextBusXMLFeed.pdf] to display transit routes and vehicle positions.
 
 ### Built with
 
