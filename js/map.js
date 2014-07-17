@@ -1,8 +1,9 @@
 module.exports = Map;
 
 function Map() {
-  this.route = 'N';
   this.vehiclesLoaded = false;
+  this.mapLoaded = false;
+  this.route = 'N';
   this.lastTime = '0';
   this.g;
   this.projection;
@@ -38,7 +39,14 @@ Map.prototype = {
           }
 
           path = d3.geo.path().projection(projection);
-          d3.selectAll("path").attr("d", path);
+          d3.selectAll('path').attr('d', path);
+          d3.selectAll('circle')
+            .attr('cx', function(d) {
+              return projection([d.lon, d.lat])[0];
+            })
+            .attr('cy', function(d) {
+              return projection([d.lon, d.lat])[1];
+            });
         });
 
     var svg = d3.select('#map').append('svg')
@@ -57,6 +65,7 @@ Map.prototype = {
 
 		var g = this.g = svg.append('g');
 
+    var map = this;
 		d3.json('maps/neighborhoods.json', function(json) {
 		  g.append('g')
 		    .attr('id', 'neighborhoods')
@@ -66,6 +75,7 @@ Map.prototype = {
 		    .append('path')
 		    .attr('id', function(d) { return d.properties.neighborho; })
 		    .attr('d', path);
+      map.mapLoaded = true;   
 		});
 	},
   resetRoute: function(route) {
@@ -79,11 +89,15 @@ Map.prototype = {
     this.updateLocations();
   },
 	updateLocations: function() {
-		var g = this.g;
-		var projection = this.projection;
+    var map = this;
+    if (!this.mapLoaded) {
+      setTimeout(function() { map.updateLocations(); }, 100);
+      return;
+    }
+    var g = this.g;
+    var projection = this.projection;
 
     console.log('Updating vehicle positions for route: ', this.route);
-    var map = this;
     $.ajax({
       url: 'http://webservices.nextbus.com/service/publicXMLFeed?command=vehicleLocations&a=sf-muni&r=' + map.route + '&t=' + map.lastTime,
       type: 'GET',
